@@ -15,7 +15,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
         - name: transactionhistory
-          image: ghcr.io/nginxinc/bos-transactionhistory:v1.3.0
+          image: $DOCKER_REGISTRY/bos-transactionhistory:v1.3.0
           imagePullPolicy: Always
           volumeMounts:
             - name: publickey
