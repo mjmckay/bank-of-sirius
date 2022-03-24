@@ -11,7 +11,7 @@ resources:
     configuration:
       registry: MyArtifactory
       sourceRepository: workshop-local
-      imageName: f5test.jfrog.com/workshop-docker-local/frontend_app
+      imageName: f5test.jfrog.com/workshop-docker/frontend_app
       imageTag: ${run_number}
       autoPull: true
   - name: frontend_build_info
@@ -36,7 +36,7 @@ pipelines:
           affinityGroup: docker_build
           dockerFileLocation: src/frontend
           dockerFileName: Dockerfile
-          dockerImageName: f5test.jfrog.io/workshop-docker-local/frontend_app
+          dockerImageName: f5test.jfrog.io/workshop-docker/frontend_app
           dockerImageTag: ${run_number}
           inputResources:
             - name: gitRepo
