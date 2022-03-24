@@ -1,0 +1,74 @@
+resources:
+  - name: gitRepo
+    type: GitRepo
+    configuration:
+      path: mjmckay/bank-of-sirius
+      gitProvider: MyGitHub
+      branches:
+        include: master
+  - name: frontend_image
+    type: Image
+    configuration:
+      registry: MyArtifactory
+      sourceRepository: workshop-local
+      imageName: f5test.jfrog.com/workshop-docker-local/frontend_app
+      imageTag: ${run_number}
+      autoPull: true
+  - name: frontend_build_info
+    type: Buildinfo
+    configuration:
+      sourceArtifactory: MyArtifactory
+      buildName: frontend_build
+      buildNumber: ${run_number}
+  - name: promoted_frontend_build_info
+    type: Buildinfo
+    configuration:
+      sourceArtifactory: MyArtifactory
+      buildName: frontend_build
+      buildNumber: ${run_number}
+
+pipelines:
+  - name: frontend_build
+    steps:
+      - name: docker_build
+        type: DockerBuild
+        configuration:
+          affinityGroup: docker_build
+          dockerFileLocation: src/frontend
+          dockerFileName: Dockerfile
+          dockerImageName: f5test.jfrog.io/workshop-docker-local/frontend_app
+          dockerImageTag: ${run_number}
+          inputResources:
+            - name: gitRepo
+          integrations:
+            - name: MyArtifactory
+        execution:
+          onSuccess:
+            - echo "Congrats The Docker image was built!"
+      - name: docker_push
+        type: DockerPush
+        configuration:
+          affinityGroup: docker_build
+          autoPublishBuildInfo: true
+          forceXrayScan: false
+          targetRepository: workshop-docker-local
+          integrations:
+            - name:  MyArtifactory
+          inputSteps:
+            - name: docker_build
+          outputResources:
+            - name: frontend_app
+            - name: frontend_build_info
+      - name: docker_promote
+        type: PromoteBuild
+        configuration:
+          targetRepository:      workshop-docker-prod-local
+          includeDependencies:   true
+          status:                Passed
+          comment:               Artifact passed Xray Scan
+          copy:                  true
+          inputResources:
+            - name: frontend_build_info
+          outputResources:
+            - name: promoted_frontend_build_info
+        
