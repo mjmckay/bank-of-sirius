@@ -9,7 +9,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-ARG IMAGE_PREFIX=f5test.jfrog.io/workshop-docker
+ARG IMAGE_PREFIX=f5prod.jfrog.io/workshop-docker
 
 FROM $IMAGE_PREFIX/bos-python
 
